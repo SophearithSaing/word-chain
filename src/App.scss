@@ -1,5 +1,48 @@
 .app {
+  padding: 24px;
   h1 {
     text-align: center;
+    font-size: 40px;
+  }
+  .word {
+    &__list {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 24px;
+    }
+    &__item {
+      &:first-child {
+        text-transform: capitalize;
+      }
+      &--last-char {
+        color: green;
+      }
+    }
+    &__current {
+      height: 28px;
+      padding-right: 2px;
+      animation: cursor 1s linear infinite;
+    }
+  }
+  input {
+    opacity: 0;
+  }
+  .message {
+    display: block;
+    text-align: center;
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+}
+
+@keyframes cursor {
+  0% {
+    border-right: 1px solid black;
+  }
+
+  100% {
+    border-right: 1px solid transparent;
   }
 }
