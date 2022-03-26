@@ -54,21 +54,28 @@ function App() {
         setUsedWords([...usedWords, word]);
         setLastChar(str[str.length - 1]);
         setStr('');
-        fetch(
-          `${process.env.REACT_APP_DB_URL}/strings/room-1.json`,
-          {
-            method: 'PATCH',
-            body: JSON.stringify({
-              list: [...strList, str.toLowerCase()],
-            }),
-          },
-        );
+        fetch(`${process.env.REACT_APP_DB_URL}/strings/room-1.json`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            list: [...strList, str.toLowerCase()],
+          }),
+        });
       } else if (!words.includes(word)) {
         setError('Enter a valid word!');
       } else if (usedWords.includes(word)) {
         setError(`${word} was already used!`);
       }
     }
+  }
+
+  function resetHandler() {
+    setStrList([]);
+    fetch(`${process.env.REACT_APP_DB_URL}/strings/room-1.json`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        list: [],
+      }),
+    });
   }
 
   function formatStr(str, index) {
@@ -98,6 +105,11 @@ function App() {
         onChange={changeHandler}
       />
       {error && <p className="message">{error}</p>}
+      {strList.length > 0 && (
+        <button className="reset-button" onClick={resetHandler}>
+          Reset Game
+        </button>
+      )}
     </div>
   );
 }
