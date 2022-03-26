@@ -3,6 +3,17 @@ import { useRef } from 'react';
 import './App.scss';
 import data from './data/words.json';
 
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
+import { useEffect } from 'react';
+
+const config = {
+  databaseURL: process.env.REACT_APP_DB_URL,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+};
+
+firebase.initializeApp(config);
+const db = firebase.database();
 const words = data.words;
 
 function App() {
@@ -12,6 +23,19 @@ function App() {
   const [strList, setStrList] = useState([]);
   const [usedWords, setUsedWords] = useState([]);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const ref = db.ref('strings/room-1');
+
+    ref.on('value', (snapshot) => {
+      const data = snapshot.val();
+      setStrList(data.list);
+      const lastWord = data.list[data.list.length - 1];
+      setLastChar(lastWord[lastWord.length - 1]);
+    });
+
+    return () => ref.off();
+  }, []);
 
   function focus() {
     inputRef.current.focus();
@@ -30,10 +54,19 @@ function App() {
         setUsedWords([...usedWords, word]);
         setLastChar(str[str.length - 1]);
         setStr('');
+        fetch(
+          `${process.env.REACT_APP_DB_URL}/strings/room-1.json`,
+          {
+            method: 'PATCH',
+            body: JSON.stringify({
+              list: [...strList, str.toLowerCase()],
+            }),
+          },
+        );
       } else if (!words.includes(word)) {
         setError('Enter a valid word!');
       } else if (usedWords.includes(word)) {
-        setError(`${word} was already used!`)
+        setError(`${word} was already used!`);
       }
     }
   }
@@ -64,7 +97,7 @@ function App() {
         onKeyUp={enterWordHandler}
         onChange={changeHandler}
       />
-      {error && <p className="message">{ error }</p>}
+      {error && <p className="message">{error}</p>}
     </div>
   );
 }
