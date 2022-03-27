@@ -1,19 +1,8 @@
-import { useState } from 'react';
-import { useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './App.scss';
+import db from './firebase';
 import data from './data/words.json';
 
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
-import { useEffect } from 'react';
-
-const config = {
-  databaseURL: process.env.REACT_APP_DB_URL,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-};
-
-firebase.initializeApp(config);
-const db = firebase.database();
 const words = data.words;
 
 function App() {
@@ -29,9 +18,13 @@ function App() {
 
     ref.on('value', (snapshot) => {
       const data = snapshot.val();
-      setStrList(data.list);
-      const lastWord = data.list[data.list.length - 1];
-      setLastChar(lastWord[lastWord.length - 1]);
+      if (data) {
+        setStrList(data.list);
+        const lastWord = data.list[data.list.length - 1];
+        setLastChar(lastWord[lastWord.length - 1]);
+      } else {
+        setStrList([]);
+      }
     });
 
     return () => ref.off();
@@ -61,6 +54,7 @@ function App() {
           }),
         });
       } else if (!words.includes(word)) {
+        console.log(word);
         setError('Enter a valid word!');
       } else if (usedWords.includes(word)) {
         setError(`${word} was already used!`);
@@ -69,7 +63,7 @@ function App() {
   }
 
   function resetHandler() {
-    setStrList([]);
+    setLastChar('');
     fetch(`${process.env.REACT_APP_DB_URL}/strings/room-1.json`, {
       method: 'PATCH',
       body: JSON.stringify({
