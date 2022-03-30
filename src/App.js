@@ -87,17 +87,18 @@ function App() {
       {strList.length === 0 && <p className="message">Enter a word to start</p>}
       <div className="word__list">
         {strList.map((str, index) => formatStr(str, index))}
-        <p className="word__current">{str}</p>
+        <input
+          type="text"
+          autoFocus
+          spellCheck="false"
+          ref={inputRef}
+          value={str}
+          onBlur={focus}
+          onKeyUp={enterWordHandler}
+          onChange={changeHandler}
+        />
       </div>
-      <input
-        type="text"
-        autoFocus
-        ref={inputRef}
-        value={str}
-        onBlur={focus}
-        onKeyUp={enterWordHandler}
-        onChange={changeHandler}
-      />
+
       {error && <p className="message">{error}</p>}
       {strList.length > 0 && (
         <button className="reset-button" onClick={resetHandler}>
