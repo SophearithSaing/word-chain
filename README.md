@@ -5,10 +5,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## .env File
 Get database url and project ID from firebase config
 
-`
+```
 REACT_APP_DB_URL=firebase databaseURL
+
 REACT_APP_PROJECT_ID=firebase projectId
-`
+```
 
 ## Available Scripts
 
